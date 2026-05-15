@@ -1,0 +1,23 @@
+{
+  "name": "Flutter — Butterfly Identifier",
+  "short_name": "Flutter",
+  "description": "AI-powered butterfly species identifier",
+  "start_url": "/flutter/",
+  "scope": "/flutter/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fdf4ff",
+  "theme_color": "#c084fc",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/c084fc/ffffff?text=🦋",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/c084fc/ffffff?text=🦋",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
