@@ -50,26 +50,29 @@ async function boot() {
 
 async function loadModel() {
   try {
+    // Fetch metadata
     const metaResp = await fetch(State.METADATA_URL);
-    if (metaResp.ok) {
-      const meta = await metaResp.json();
-      State.labels = meta.labels || meta.classes || Object.values(meta) || [];
-    }
-  } catch (_) {
-    console.warn('metadata.json not found — using fallback labels');
-    State.labels = generateFallbackLabels();
-  }
+    if (!metaResp.ok) throw new Error(`Metadata HTTP ${metaResp.status}`);
+    const meta = await metaResp.json();
+    State.labels = meta.labels || [];
+    console.log('✅ Labels loaded:', State.labels);
 
-  try {
+    // Load model
     State.model = await tf.loadLayersModel(State.MODEL_URL);
+
+    // Warm-up prediction (fixes first-run slowness)
+    const dummy = tf.zeros([1, 224, 224, 3]);
+    State.model.predict(dummy).dispose();
+    dummy.dispose();
+
     console.log('✅ Model loaded successfully');
     setModelStatus('ready');
     showToast('🦋 AI model ready!');
   } catch (e) {
-    console.warn('model.json not found — running in demo mode:', e);
-    State.model = null;
+    console.warn('Model load failed:', e);
     setModelStatus('error');
     showToast('⚠️ Demo mode — no model found');
+    State.model = null;
     if (State.labels.length === 0) State.labels = generateFallbackLabels();
   }
 }
@@ -97,23 +100,18 @@ function dismissSplash() {
    PREDICTION ENGINE
 ════════════════════════════════════════════════════════ */
 async function predict(imageEl) {
-  if (!State.model) {
-    // Demo mode: random-ish scores
-    return demoPredict();
-  }
+  if (!State.model) return demoPredict();
 
   return tf.tidy(() => {
-    const INPUT_SIZE = 224; // standard MobileNet / TeachableMachine size
-
-    let tensor = tf.browser.fromPixels(imageEl)
-      .resizeBilinear([INPUT_SIZE, INPUT_SIZE])
+    const tensor = tf.browser.fromPixels(imageEl)
+      .resizeBilinear([224, 224])
       .toFloat()
-      .div(255.0)
+      .div(127.5)   // ← your FlowerKnows uses div(127.5).sub(1), not div(255)
+      .sub(1)
       .expandDims(0);
 
     const output = State.model.predict(tensor);
     const scores = Array.from(output.dataSync());
-
     return buildTopK(scores, 3);
   });
 }
