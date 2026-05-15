@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Flutter — Butterfly Identifier</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#c084fc" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ SPLASH SCREEN -->
+<div id="splash">
+  <div class="splash-bg"></div>
+  <div class="splash-butterflies">
+    <span class="sb sb1">🦋</span>
+    <span class="sb sb2">🦋</span>
+    <span class="sb sb3">🦋</span>
+    <span class="sb sb4">🦋</span>
+    <span class="sb sb5">🦋</span>
+  </div>
+  <div class="splash-content">
+    <div class="splash-logo">
+      <div class="logo-ring"></div>
+      <span class="logo-emoji">🦋</span>
+    </div>
+    <h1 class="splash-title">Flutter</h1>
+    <p class="splash-sub">Butterfly Species Identifier</p>
+    <div class="splash-loader">
+      <div class="loader-track"><div class="loader-fill"></div></div>
+      <p class="loader-text">Loading AI model…</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ APP SHELL -->
+<div id="app" class="hidden">
+
+  <!-- Ambient animated background -->
+  <div class="ambient-bg">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+  <div class="bg-butterflies" aria-hidden="true">
+    <span class="bb bb1">🦋</span>
+    <span class="bb bb2">🦋</span>
+    <span class="bb bb3">🦋</span>
+    <span class="bb bb4">🦋</span>
+    <span class="bb bb5">🦋</span>
+    <span class="bb bb6">🌸</span>
+    <span class="bb bb7">🌿</span>
+    <span class="bb bb8">🌸</span>
+  </div>
+
+  <!-- ─── PAGES ─── -->
+  <main id="pages">
+
+    <!-- HOME PAGE -->
+    <section class="page active" id="page-home">
+      <div class="page-scroll">
+        <header class="home-header">
+          <div class="header-pill">
+            <span class="header-emoji">🦋</span>
+            <span>Flutter</span>
+          </div>
+          <button class="icon-btn" id="model-status-btn" title="Model status">
+            <span id="model-dot" class="status-dot loading"></span>
+          </button>
+        </header>
+
+        <div class="hero-card">
+          <div class="hero-bg-blob"></div>
+          <div class="hero-text">
+            <p class="hero-eyebrow">AI-Powered</p>
+            <h2 class="hero-title">Discover<br/><em>Butterflies</em></h2>
+            <p class="hero-desc">Point your camera at a butterfly or upload a photo to identify the species instantly.</p>
+          </div>
+          <div class="hero-illustration">🦋</div>
+        </div>
+
+        <div class="quick-actions">
+          <button class="qa-btn qa-camera" onclick="navigateTo('camera')">
+            <div class="qa-icon">📷</div>
+            <span>Live Camera</span>
+          </button>
+          <button class="qa-btn qa-upload" onclick="navigateTo('upload')">
+            <div class="qa-icon">🖼️</div>
+            <span>Upload Image</span>
+          </button>
+        </div>
+
+        <div class="section-label">Recent Scans</div>
+        <div id="home-history-preview" class="home-history-preview">
+          <div class="empty-state-sm">
+            <span>🌿</span>
+            <p>No scans yet — go explore!</p>
+          </div>
+        </div>
+
+        <div class="garden-decoration">
+          <span>🌸</span><span>🌿</span><span>🌺</span><span>🍃</span><span>🌸</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAMERA PAGE -->
+    <section class="page" id="page-camera">
+      <div class="page-scroll">
+        <div class="page-topbar">
+          <button class="back-btn" onclick="navigateTo('home')">‹</button>
+          <h2 class="page-title">Live Camera</h2>
+          <div></div>
+        </div>
+
+        <div class="camera-container">
+          <div class="camera-frame">
+            <video id="camera-video" autoplay playsinline muted></video>
+            <canvas id="camera-canvas" class="hidden"></canvas>
+            <div class="scan-border"></div>
+            <div class="corner c-tl"></div>
+            <div class="corner c-tr"></div>
+            <div class="corner c-bl"></div>
+            <div class="corner c-br"></div>
+            <div class="scan-line" id="scan-line"></div>
+          </div>
+          <p class="camera-hint">Position butterfly in frame</p>
+        </div>
+
+        <div class="camera-controls">
+          <button class="cam-switch-btn" id="cam-switch-btn" title="Switch camera">🔄</button>
+          <button class="capture-btn" id="capture-btn">
+            <div class="capture-inner">
+              <span>🦋</span>
+            </div>
+          </button>
+          <button class="cam-torch-btn" id="cam-torch-btn" title="Flash">⚡</button>
+        </div>
+
+        <div id="camera-result" class="result-card hidden"></div>
+      </div>
+    </section>
+
+    <!-- UPLOAD PAGE -->
+    <section class="page" id="page-upload">
+      <div class="page-scroll">
+        <div class="page-topbar">
+          <button class="back-btn" onclick="navigateTo('home')">‹</button>
+          <h2 class="page-title">Upload Image</h2>
+          <div></div>
+        </div>
+
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" id="file-input" accept="image/*" class="hidden" />
+          <div class="upload-illustration">
+            <div class="upload-circle">
+              <span class="upload-emoji">🦋</span>
+            </div>
+          </div>
+          <h3 class="upload-title">Tap to choose a photo</h3>
+          <p class="upload-hint">JPG, PNG, WEBP supported</p>
+        </div>
+
+        <div id="upload-preview-wrap" class="upload-preview-wrap hidden">
+          <img id="upload-preview" class="upload-preview-img" alt="Preview" />
+          <button class="clear-upload-btn" id="clear-upload-btn">✕ Clear</button>
+        </div>
+
+        <div id="upload-result" class="result-card hidden"></div>
+      </div>
+    </section>
+
+    <!-- HISTORY PAGE -->
+    <section class="page" id="page-history">
+      <div class="page-scroll">
+        <div class="page-topbar">
+          <div></div>
+          <h2 class="page-title">My Garden</h2>
+          <button class="icon-btn danger" id="clear-all-btn" title="Clear all">🗑️</button>
+        </div>
+
+        <div id="history-list" class="history-list">
+          <div class="empty-state">
+            <div class="empty-emoji">🌿</div>
+            <h3>Your garden is empty</h3>
+            <p>Identified butterflies will appear here</p>
+            <button class="cta-btn" onclick="navigateTo('camera')">Start Scanning</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ─── FLOATING NAV DOCK ─── -->
+  <nav class="nav-dock" id="nav-dock">
+    <button class="nav-item active" data-page="home">
+      <span class="nav-icon">🏡</span>
+      <span class="nav-label">Home</span>
+    </button>
+    <button class="nav-item" data-page="camera">
+      <span class="nav-icon">📷</span>
+      <span class="nav-label">Camera</span>
+    </button>
+    <button class="nav-item" data-page="upload">
+      <span class="nav-icon">🖼️</span>
+      <span class="nav-label">Upload</span>
+    </button>
+    <button class="nav-item" data-page="history">
+      <span class="nav-icon">📖</span>
+      <span class="nav-label">Garden</span>
+    </button>
+  </nav>
+
+</div>
+
+<!-- ═══════════════════════════════════════ MODEL STATUS TOAST -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
