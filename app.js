@@ -7,6 +7,8 @@
 
 /* ─── STATE ─── */
 const State = {
+  MODEL_URL:    './trained_model/model.json',
+  METADATA_URL: './trained_model/metadata.json',
   model:       null,
   labels:      [],
   stream:      null,
@@ -47,9 +49,8 @@ async function boot() {
 }
 
 async function loadModel() {
-  // Load metadata first
   try {
-    const metaResp = await fetch('metadata.json');
+    const metaResp = await fetch(State.METADATA_URL);
     if (metaResp.ok) {
       const meta = await metaResp.json();
       State.labels = meta.labels || meta.classes || Object.values(meta) || [];
@@ -59,15 +60,14 @@ async function loadModel() {
     State.labels = generateFallbackLabels();
   }
 
-  // Load TF model
   try {
-    State.model = await tf.loadLayersModel('model.json');
+    State.model = await tf.loadLayersModel(State.MODEL_URL);
     console.log('✅ Model loaded successfully');
     setModelStatus('ready');
     showToast('🦋 AI model ready!');
   } catch (e) {
     console.warn('model.json not found — running in demo mode:', e);
-    State.model = null;          // demo mode
+    State.model = null;
     setModelStatus('error');
     showToast('⚠️ Demo mode — no model found');
     if (State.labels.length === 0) State.labels = generateFallbackLabels();
