@@ -1,1077 +1,757 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Flutter — Butterfly Identifier</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#c084fc" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
-  <style>
-  /* ══════════════════════════════════════════════════════════
-   Flutter — Butterfly Identifier  |  style.css
-   Dreamy · Soft · Magical · Nature-Inspired
-══════════════════════════════════════════════════════════ */
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Flutter — Butterfly Identifier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-/* ─── FONTS & RESET ─── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --lavender:     #c084fc;
-  --lavender-lt:  #e9d5ff;
-  --pink:         #f9a8d4;
-  --pink-lt:      #fce7f3;
-  --sky:          #7dd3fc;
-  --sky-lt:       #e0f2fe;
-  --purple:       #a855f7;
-  --purple-dk:    #7c3aed;
-  --green:        #86efac;
-  --white:        #ffffff;
-  --cream:        #fdf4ff;
-  --text-dk:      #3b0764;
-  --text-md:      #7e22ce;
-  --text-lt:      #a78bfa;
-  --glass-bg:     rgba(255,255,255,0.55);
-  --glass-border: rgba(255,255,255,0.8);
-  --shadow-soft:  0 8px 32px rgba(168,85,247,0.15);
-  --shadow-card:  0 4px 24px rgba(124,58,237,0.12);
-  --radius-xl:    24px;
-  --radius-lg:    18px;
-  --radius-md:    12px;
-  --nav-h:        80px;
-  --ff-display:   'Playfair Display', Georgia, serif;
-  --ff-body:      'Nunito', sans-serif;
+:root{
+  --sage:    #8faa8f;
+  --sage-lt: #d4e2d4;
+  --sage-dk: #4a6b4a;
+  --blush:   #d4a8a0;
+  --blush-lt:#f0e0dc;
+  --stone:   #9c8f85;
+  --stone-lt:#ede7e3;
+  --cream:   #faf7f4;
+  --paper:   #f2ede8;
+  --white:   #ffffff;
+  --ink:     #2c2420;
+  --ink-md:  #6b5c56;
+  --ink-lt:  #a8978f;
+  --border:  rgba(44,36,32,0.1);
+  --border-md:rgba(44,36,32,0.18);
+  --glass:   rgba(250,247,244,0.85);
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --ff-display: 'Cormorant Garamond', Georgia, serif;
+  --ff-body:    'DM Sans', sans-serif;
+  --nav-h: 72px;
+  --shadow: 0 2px 20px rgba(44,36,32,0.08);
+  --shadow-md: 0 4px 32px rgba(44,36,32,0.12);
 }
 
-html, body {
-  width: 100%; height: 100%;
-  overflow: hidden;
-  background: var(--cream);
-  font-family: var(--ff-body);
-  -webkit-font-smoothing: antialiased;
-}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--cream);font-family:var(--ff-body);-webkit-font-smoothing:antialiased;color:var(--ink)}
+.hidden{display:none!important}
+button{cursor:pointer;border:none;background:none;font-family:inherit;color:inherit}
+img{display:block}
 
-.hidden { display: none !important; }
-button { cursor: pointer; border: none; background: none; font-family: inherit; }
+/* ── SPLASH ── */
+#splash{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--cream);
+  transition:opacity 0.6s ease,visibility 0.6s ease;
+}
+#splash.fade-out{opacity:0;visibility:hidden}
 
-/* ══════════════════════════════════════════════════════════
-   SPLASH SCREEN
-══════════════════════════════════════════════════════════ */
-#splash {
-  position: fixed; inset: 0; z-index: 9999;
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
-  transition: opacity 0.7s ease, visibility 0.7s ease;
+.splash-inner{
+  display:flex;flex-direction:column;align-items:center;gap:20px;
+  animation:splashIn 0.7s cubic-bezier(.34,1.4,.64,1) both;
 }
-#splash.fade-out { opacity: 0; visibility: hidden; }
+@keyframes splashIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 
-.splash-bg {
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, #f5d0fe 0%, #e879f9 30%, #a855f7 60%, #7c3aed 100%);
-  animation: splashBgShift 4s ease-in-out infinite alternate;
+.splash-mark{
+  width:88px;height:88px;border-radius:50%;
+  border:1.5px solid var(--border-md);
+  display:flex;align-items:center;justify-content:center;
+  background:var(--paper);
 }
-@keyframes splashBgShift {
-  0%   { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(20deg); }
-}
+.splash-mark i{font-size:36px;color:var(--sage-dk)}
 
-.splash-butterflies {
-  position: absolute; inset: 0; pointer-events: none;
+.splash-wordmark{
+  font-family:var(--ff-display);font-size:38px;font-weight:500;
+  color:var(--ink);letter-spacing:2px;
 }
-.sb {
-  position: absolute; font-size: 28px; opacity: 0.4;
-  animation: floatRandom 6s ease-in-out infinite;
-}
-.sb1 { top:10%; left:8%;  animation-delay:0s;    animation-duration:7s; }
-.sb2 { top:20%; right:10%;animation-delay:1s;    animation-duration:6s; }
-.sb3 { top:60%; left:5%;  animation-delay:2s;    animation-duration:8s; }
-.sb4 { top:75%; right:8%; animation-delay:0.5s;  animation-duration:7s; }
-.sb5 { top:45%; left:50%; animation-delay:1.5s;  animation-duration:6s; }
+.splash-sub{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--ink-lt);font-weight:400}
 
-@keyframes floatRandom {
-  0%,100% { transform: translateY(0) rotate(-5deg); }
-  50%      { transform: translateY(-20px) rotate(8deg); }
-}
+.splash-bar-wrap{width:160px;margin-top:8px}
+.splash-bar-track{height:1px;background:var(--border);border-radius:1px;overflow:hidden}
+.splash-bar-fill{height:100%;width:0;background:var(--sage);animation:barFill 2.4s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes barFill{to{width:100%}}
 
-.splash-content {
-  position: relative; z-index:1;
-  display: flex; flex-direction: column; align-items: center;
-  gap: 12px; text-align: center;
-  animation: splashIn 0.8s cubic-bezier(.34,1.56,.64,1) both;
+/* ── APP SHELL ── */
+#app{
+  position:fixed;inset:0;display:flex;flex-direction:column;
+  max-width:420px;margin:0 auto;
+  background:var(--cream);
+  animation:appIn 0.4s ease both;
 }
-@keyframes splashIn {
-  from { transform: scale(0.7) translateY(40px); opacity:0; }
-  to   { transform: scale(1) translateY(0); opacity:1; }
-}
+@keyframes appIn{from{opacity:0}to{opacity:1}}
 
-.splash-logo {
-  position: relative; width: 110px; height: 110px;
-  display: flex; align-items: center; justify-content: center;
-}
-.logo-ring {
-  position: absolute; inset: 0; border-radius: 50%;
-  border: 3px solid rgba(255,255,255,0.6);
-  animation: pulse-ring 2s ease-in-out infinite;
-}
-@keyframes pulse-ring {
-  0%,100% { transform: scale(1);   opacity:0.7; }
-  50%      { transform: scale(1.12);opacity:0.3; }
-}
-.logo-emoji {
-  font-size: 64px; line-height:1;
-  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.25));
-  animation: logoFloat 3s ease-in-out infinite;
-}
-@keyframes logoFloat {
-  0%,100% { transform: translateY(0) rotate(-5deg); }
-  50%      { transform: translateY(-8px) rotate(5deg); }
-}
-
-.splash-title {
-  font-family: var(--ff-display); font-size: 42px; font-weight: 700;
-  color: #fff; letter-spacing: 2px;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.2);
-}
-.splash-sub {
-  font-size: 14px; color: rgba(255,255,255,0.85); font-weight: 600;
-  letter-spacing: 1px; text-transform: uppercase;
-}
-.splash-loader { width: 200px; margin-top: 24px; }
-.loader-track {
-  height: 4px; background: rgba(255,255,255,0.25); border-radius: 99px; overflow: hidden;
-}
-.loader-fill {
-  height: 100%; width: 0%; background: #fff; border-radius: 99px;
-  animation: loadFill 2.5s cubic-bezier(.4,0,.2,1) forwards;
-}
-@keyframes loadFill { to { width: 100%; } }
-.loader-text {
-  color: rgba(255,255,255,0.75); font-size: 12px; margin-top:8px; text-align:center;
-}
-
-/* ══════════════════════════════════════════════════════════
-   APP SHELL
-══════════════════════════════════════════════════════════ */
-#app {
-  position: fixed; inset: 0;
-  display: flex; flex-direction: column;
-  overflow: hidden;
-  max-width: 420px; margin: 0 auto;
-  background: var(--cream);
-  animation: appReveal 0.5s ease both;
-}
-@keyframes appReveal { from { opacity:0; } to { opacity:1; } }
-
-/* Ambient background orbs */
-.ambient-bg {
-  position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index:0;
-}
-.orb {
-  position: absolute; border-radius: 50%;
-  filter: blur(70px); opacity: 0.35;
-  animation: orbDrift 12s ease-in-out infinite;
-}
-.orb1 { width:280px; height:280px; background:#e879f9; top:-60px; left:-60px; animation-delay:0s; }
-.orb2 { width:220px; height:220px; background:#7dd3fc; top:50%; right:-80px; animation-delay:4s; }
-.orb3 { width:200px; height:200px; background:#f9a8d4; bottom:-60px; left:30%; animation-delay:8s; }
-@keyframes orbDrift {
-  0%,100% { transform: translate(0,0) scale(1); }
-  33%      { transform: translate(20px,-20px) scale(1.05); }
-  66%      { transform: translate(-15px,15px) scale(0.95); }
-}
-
-/* Background butterfly decorations */
-.bg-butterflies {
-  position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
-}
-.bb {
-  position: absolute; opacity: 0.12; font-size: 22px;
-  animation: bbFly 12s ease-in-out infinite;
-}
-.bb1  { top:15%; left:5%;   animation-duration:11s; animation-delay:0s; }
-.bb2  { top:35%; right:8%;  animation-duration:14s; animation-delay:2s; }
-.bb3  { top:55%; left:12%;  animation-duration:10s; animation-delay:5s; }
-.bb4  { top:70%; right:15%; animation-duration:13s; animation-delay:1s; }
-.bb5  { top:85%; left:40%;  animation-duration:12s; animation-delay:3s; }
-.bb6  { top:5%;  right:30%; animation-duration:15s; animation-delay:4s; }
-.bb7  { top:90%; left:10%;  animation-duration:9s;  animation-delay:6s; font-size:18px; }
-.bb8  { top:50%; right:40%; animation-duration:11s; animation-delay:2s; font-size:18px; }
-@keyframes bbFly {
-  0%,100% { transform: translate(0,0) scale(1) rotate(-5deg); }
-  25%      { transform: translate(15px,-25px) scale(1.1) rotate(5deg); }
-  50%      { transform: translate(-10px,-10px) scale(0.95) rotate(-3deg); }
-  75%      { transform: translate(10px,-20px) scale(1.05) rotate(8deg); }
+/* Subtle grain texture */
+#app::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:0.4;
 }
 
 /* ── PAGES ── */
-#pages { position: relative; flex: 1; overflow: hidden; z-index: 1; }
+#pages{position:relative;flex:1;overflow:hidden;z-index:1}
 
-.page {
-  position: absolute; inset: 0;
-  bottom: var(--nav-h);
-  opacity: 0; pointer-events: none;
-  transform: translateY(16px);
-  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(.34,1.3,.64,1);
-  overflow: hidden;
+.page{
+  position:absolute;inset:0;bottom:var(--nav-h);
+  opacity:0;pointer-events:none;
+  transform:translateY(12px);
+  transition:opacity 0.3s ease,transform 0.3s cubic-bezier(.34,1.2,.64,1);
+  overflow:hidden;
 }
-.page.active { opacity: 1; pointer-events: all; transform: translateY(0); }
+.page.active{opacity:1;pointer-events:all;transform:none}
 
-.page-scroll {
-  height: 100%; overflow-y: auto; overflow-x: hidden;
-  padding: 0 16px 24px;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+.scroll{
+  height:100%;overflow-y:auto;overflow-x:hidden;
+  padding:0 20px 32px;
+  -webkit-overflow-scrolling:touch;
 }
-.page-scroll::-webkit-scrollbar { display: none; }
+.scroll::-webkit-scrollbar{display:none}
 
-/* ══════════════════════════════════════════════════════════
-   HOME PAGE
-══════════════════════════════════════════════════════════ */
-.home-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 52px 0 16px;
+/* ── TOPBAR ── */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:52px 0 20px;
 }
-.header-pill {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--glass-bg); border: 1.5px solid var(--glass-border);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  padding: 8px 16px; border-radius: 99px;
-  font-family: var(--ff-display); font-size: 18px; font-weight: 700;
-  color: var(--text-dk);
-  box-shadow: var(--shadow-soft);
+.topbar-title{
+  font-family:var(--ff-display);font-size:22px;font-weight:500;
+  color:var(--ink);letter-spacing:0.5px;
 }
-.header-emoji { font-size: 20px; }
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1px solid var(--border-md);
+  background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:var(--ink-md);
+  transition:background 0.15s,transform 0.15s;
+}
+.icon-btn:active{transform:scale(0.93)}
+.icon-btn.danger{color:#b84444}
+.icon-btn i{font-size:18px}
 
-/* Hero card */
-.hero-card {
-  position: relative; overflow: hidden;
-  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #6d28d9 100%);
-  border-radius: 28px;
-  padding: 28px 24px 28px;
-  margin-bottom: 16px;
-  box-shadow: 0 12px 40px rgba(124,58,237,0.35);
-  display: flex; align-items: center; justify-content: space-between;
-  min-height: 180px;
+/* ══ HOME PAGE ══ */
+.home-top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:52px 0 24px;
 }
-.hero-bg-blob {
-  position: absolute; width: 200px; height: 200px;
-  background: rgba(255,255,255,0.1); border-radius: 50%;
-  top: -60px; right: -40px;
+.home-brand{
+  display:flex;align-items:center;gap:10px;
 }
-.hero-text { flex: 1; z-index: 1; }
-.hero-eyebrow {
-  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-  color: rgba(255,255,255,0.7); font-weight: 700; margin-bottom: 6px;
+.home-brand-mark{
+  width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--border-md);background:var(--paper);
+  display:flex;align-items:center;justify-content:center;
 }
-.hero-title {
-  font-family: var(--ff-display); font-size: 32px; line-height: 1.15;
-  color: #fff; font-weight: 700; margin-bottom: 10px;
+.home-brand-mark i{font-size:16px;color:var(--sage-dk)}
+.home-brand-name{
+  font-family:var(--ff-display);font-size:20px;font-weight:500;
+  color:var(--ink);letter-spacing:1px;
 }
-.hero-title em { font-style: italic; color: var(--pink); }
-.hero-desc {
-  font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.6; max-width: 190px;
+
+.status-dot{
+  width:8px;height:8px;border-radius:50%;display:inline-block;
 }
-.hero-illustration {
-  font-size: 80px; z-index: 1; line-height: 1;
-  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3));
-  animation: heroButterfly 4s ease-in-out infinite;
+.status-dot.loading{background:#d4aa44;animation:dotPulse 1s ease infinite}
+.status-dot.ready{background:#6b9e6b}
+.status-dot.error{background:#b84444}
+@keyframes dotPulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* Hero */
+.hero{
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  background:var(--paper);
+  padding:32px 28px 36px;
+  margin-bottom:16px;
+  position:relative;overflow:hidden;
 }
-@keyframes heroButterfly {
-  0%,100% { transform: translateY(0) rotate(-8deg) scale(1); }
-  50%      { transform: translateY(-12px) rotate(8deg) scale(1.05); }
+.hero-eyebrow{
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--ink-lt);font-weight:500;margin-bottom:12px;
+}
+.hero-title{
+  font-family:var(--ff-display);font-size:44px;font-weight:500;
+  line-height:1.1;color:var(--ink);margin-bottom:10px;
+  letter-spacing:0.5px;
+}
+.hero-title em{font-style:italic;color:var(--sage-dk)}
+.hero-desc{font-size:13px;color:var(--ink-md);line-height:1.65;max-width:220px}
+.hero-deco{
+  position:absolute;right:24px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0.18;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);
+  writing-mode:vertical-rl;
+}
+.hero-wing{
+  position:absolute;right:20px;bottom:20px;
+  width:72px;height:72px;opacity:0.08;
 }
 
 /* Quick actions */
-.quick-actions {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;
+.actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.action-card{
+  border:1px solid var(--border);border-radius:var(--r-lg);
+  background:var(--white);padding:22px 16px 18px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:12px;
+  transition:background 0.15s,transform 0.15s,box-shadow 0.15s;
 }
-.qa-btn {
-  background: var(--glass-bg); border: 1.5px solid var(--glass-border);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-radius: var(--radius-xl); padding: 20px 16px;
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  font-size: 13px; font-weight: 700; color: var(--text-dk);
-  box-shadow: var(--shadow-card);
-  transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s ease;
+.action-card:active{transform:scale(0.97);background:var(--paper)}
+.action-icon{
+  width:40px;height:40px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
 }
-.qa-btn:active { transform: scale(0.96); }
-.qa-camera:hover { box-shadow: 0 8px 32px rgba(168,85,247,0.25); }
-.qa-upload:hover { box-shadow: 0 8px 32px rgba(249,168,212,0.3); }
-.qa-icon { font-size: 32px; }
+.action-icon.cam{background:var(--sage-lt);color:var(--sage-dk)}
+.action-icon.upl{background:var(--blush-lt);color:#8a4a42}
+.action-label{font-size:13px;font-weight:500;color:var(--ink)}
+.action-sub{font-size:11px;color:var(--ink-lt);margin-top:1px}
 
-.section-label {
-  font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--text-lt); margin-bottom: 12px;
-}
-
-.home-history-preview { display: flex; flex-direction: column; gap: 10px; }
-.empty-state-sm {
-  background: var(--glass-bg); border: 1.5px solid var(--glass-border);
-  border-radius: var(--radius-lg); padding: 20px;
-  display: flex; align-items: center; gap: 12px;
-  color: var(--text-lt); font-size: 13px;
-  backdrop-filter: blur(8px);
-}
-.empty-state-sm span { font-size: 24px; }
-
-.garden-decoration {
-  text-align: center; margin-top: 24px; font-size: 22px;
-  letter-spacing: 8px; opacity: 0.5;
+.section-head{
+  font-size:10px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--ink-lt);font-weight:500;margin-bottom:12px;
 }
 
-/* ══════════════════════════════════════════════════════════
-   PAGE TOPBAR
-══════════════════════════════════════════════════════════ */
-.page-topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 52px 0 16px;
+/* Home history mini */
+.home-hist{display:flex;flex-direction:column;gap:8px}
+.empty-sm{
+  border:1px dashed var(--border-md);border-radius:var(--r-md);
+  padding:20px;display:flex;align-items:center;gap:12px;
+  color:var(--ink-lt);font-size:13px;
 }
-.back-btn {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: var(--glass-bg); border: 1.5px solid var(--glass-border);
-  font-size: 24px; color: var(--purple-dk);
-  display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(10px);
-  transition: transform 0.15s;
-}
-.back-btn:active { transform: scale(0.9); }
-.page-title {
-  font-family: var(--ff-display); font-size: 22px; font-weight: 700;
-  color: var(--text-dk);
-}
-.icon-btn {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: var(--glass-bg); border: 1.5px solid var(--glass-border);
-  font-size: 18px; display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(10px); transition: transform 0.15s;
-}
-.icon-btn:active { transform: scale(0.9); }
-.icon-btn.danger { color: #ef4444; }
+.empty-sm i{font-size:24px;color:var(--border-md)}
 
-/* ══════════════════════════════════════════════════════════
-   CAMERA PAGE
-══════════════════════════════════════════════════════════ */
-.camera-container { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.mini-card{
+  border:1px solid var(--border);border-radius:var(--r-md);
+  background:var(--white);padding:12px;
+  display:flex;gap:12px;align-items:center;
+  animation:slideUp 0.3s ease both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.mini-thumb{width:44px;height:44px;border-radius:var(--r-sm);object-fit:cover;flex-shrink:0}
+.mini-thumb-ph{
+  width:44px;height:44px;border-radius:var(--r-sm);flex-shrink:0;
+  background:var(--sage-lt);display:flex;align-items:center;justify-content:center;
+}
+.mini-thumb-ph i{font-size:22px;color:var(--sage-dk)}
+.mini-name{font-size:13px;font-weight:500;color:var(--ink)}
+.mini-meta{font-size:11px;color:var(--ink-lt);margin-top:2px}
 
-.camera-frame {
-  position: relative; width: 100%; max-width: 360px; aspect-ratio: 1;
-  border-radius: 28px; overflow: hidden;
-  background: #111; box-shadow: 0 12px 48px rgba(124,58,237,0.3);
-}
-#camera-video { width:100%; height:100%; object-fit: cover; }
+/* ══ CAMERA PAGE ══ */
+.cam-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
 
-/* Scan animated border */
-.scan-border {
-  position: absolute; inset: 0; border-radius: 28px;
-  border: 2px solid transparent;
-  background: linear-gradient(135deg, #c084fc, #f9a8d4, #7dd3fc, #c084fc) border-box;
-  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: destination-out; mask-composite: exclude;
-  animation: borderGlow 2s linear infinite;
+.cam-frame{
+  position:relative;width:100%;max-width:360px;aspect-ratio:1;
+  border-radius:var(--r-xl);overflow:hidden;
+  background:#1a1510;
+  border:1px solid var(--border-md);
+  box-shadow:var(--shadow-md);
 }
-@keyframes borderGlow {
-  0%,100% { opacity:0.6; }
-  50%      { opacity:1; }
-}
+#camera-video{width:100%;height:100%;object-fit:cover}
 
 /* Corner brackets */
-.corner {
-  position: absolute; width: 28px; height: 28px;
-  border-color: var(--lavender); border-style: solid;
-}
-.c-tl { top:14px; left:14px;  border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
-.c-tr { top:14px; right:14px; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
-.c-bl { bottom:14px; left:14px;  border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
-.c-br { bottom:14px; right:14px; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+.corner{position:absolute;width:24px;height:24px;border-color:rgba(255,255,255,0.7);border-style:solid}
+.c-tl{top:16px;left:16px;border-width:2px 0 0 2px;border-radius:3px 0 0 0}
+.c-tr{top:16px;right:16px;border-width:2px 2px 0 0;border-radius:0 3px 0 0}
+.c-bl{bottom:16px;left:16px;border-width:0 0 2px 2px;border-radius:0 0 0 3px}
+.c-br{bottom:16px;right:16px;border-width:0 2px 2px 0;border-radius:0 0 3px 0}
 
-/* Scan line */
-.scan-line {
-  position: absolute; left: 14px; right: 14px; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--lavender), var(--pink), var(--lavender), transparent);
-  top: 14px; border-radius: 99px; opacity: 0;
-  box-shadow: 0 0 12px rgba(192,132,252,0.8);
+.scan-line{
+  position:absolute;left:16px;right:16px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(143,170,143,0.9),transparent);
+  top:16px;opacity:0;
 }
-.scan-line.scanning {
-  opacity: 1;
-  animation: scanSwipe 1.8s ease-in-out infinite;
-}
-@keyframes scanSwipe {
-  0%   { top:14px; }
-  100% { top: calc(100% - 16px); }
-}
+.scan-line.scanning{opacity:1;animation:scanSwipe 2s ease-in-out infinite}
+@keyframes scanSwipe{0%{top:16px}100%{top:calc(100% - 18px)}}
 
-.camera-hint {
-  font-size: 12px; color: var(--text-lt); font-weight: 600;
-  letter-spacing: 0.5px;
-}
+.cam-hint{font-size:11px;color:var(--ink-lt);letter-spacing:0.5px}
 
-.camera-controls {
-  display: flex; align-items: center; justify-content: center;
-  gap: 24px; margin: 20px 0;
+.cam-controls{
+  display:flex;align-items:center;justify-content:center;
+  gap:28px;margin:12px 0;
 }
-.cam-switch-btn, .cam-torch-btn {
-  width: 48px; height: 48px; border-radius: 50%;
-  background: var(--glass-bg); border: 1.5px solid var(--glass-border);
-  font-size: 22px; display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(10px); transition: transform 0.15s;
+.cam-aux{
+  width:46px;height:46px;border-radius:50%;
+  border:1px solid var(--border-md);background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:var(--ink-md);
+  transition:transform 0.15s,background 0.15s;
 }
-.cam-switch-btn:active, .cam-torch-btn:active { transform: scale(0.9); }
+.cam-aux:active{transform:scale(0.92);background:var(--paper)}
+.cam-aux i{font-size:20px}
 
-.capture-btn {
-  width: 80px; height: 80px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--lavender), var(--purple));
-  box-shadow: 0 6px 24px rgba(168,85,247,0.5), 0 0 0 6px rgba(192,132,252,0.2);
-  display: flex; align-items: center; justify-content: center;
-  transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
+.capture-btn{
+  width:72px;height:72px;border-radius:50%;
+  background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(44,36,32,0.25);
+  transition:transform 0.2s cubic-bezier(.34,1.5,.64,1),box-shadow 0.15s;
 }
-.capture-btn:active { transform: scale(0.92); box-shadow: 0 2px 12px rgba(168,85,247,0.4); }
-.capture-inner {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: white; display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-}
+.capture-btn:active{transform:scale(0.93);box-shadow:0 2px 10px rgba(44,36,32,0.2)}
+.capture-btn i{font-size:28px;color:var(--white)}
 
-/* ══════════════════════════════════════════════════════════
-   UPLOAD PAGE
-══════════════════════════════════════════════════════════ */
-.upload-zone {
-  background: var(--glass-bg); border: 2px dashed var(--lavender);
-  backdrop-filter: blur(12px);
-  border-radius: var(--radius-xl); padding: 36px 24px;
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-  cursor: pointer; transition: border-color 0.2s, background 0.2s;
-  margin-bottom: 16px;
+/* ══ UPLOAD PAGE ══ */
+.upload-zone{
+  border:1.5px dashed var(--border-md);border-radius:var(--r-xl);
+  background:var(--paper);padding:44px 24px;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  cursor:pointer;transition:border-color 0.2s,background 0.2s;
+  margin-bottom:16px;
 }
-.upload-zone:hover, .upload-zone.drag-over {
-  border-color: var(--purple); background: rgba(192,132,252,0.15);
+.upload-zone:hover,.upload-zone.drag-over{
+  border-color:var(--sage);background:rgba(143,170,143,0.06);
 }
-.upload-zone:active { transform: scale(0.99); }
-.upload-circle {
-  width: 90px; height: 90px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--lavender-lt), var(--pink-lt));
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 20px rgba(192,132,252,0.25);
+.upload-zone:active{transform:scale(0.99)}
+.upload-ring{
+  width:72px;height:72px;border-radius:50%;
+  border:1px solid var(--border-md);background:var(--white);
+  display:flex;align-items:center;justify-content:center;
 }
-.upload-emoji { font-size: 44px; animation: logoFloat 3s ease-in-out infinite; }
-.upload-title { font-family: var(--ff-display); font-size: 18px; color: var(--text-dk); }
-.upload-hint { font-size: 12px; color: var(--text-lt); }
+.upload-ring i{font-size:30px;color:var(--stone)}
+.upload-title{font-family:var(--ff-display);font-size:20px;font-weight:500;color:var(--ink)}
+.upload-hint{font-size:12px;color:var(--ink-lt)}
 
-.upload-preview-wrap {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  margin-bottom: 16px;
+.preview-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:16px;position:relative}
+.preview-img{
+  width:100%;max-height:280px;object-fit:contain;
+  border-radius:var(--r-lg);border:1px solid var(--border);
 }
-.upload-preview-img {
-  width: 100%; max-height: 280px; object-fit: contain;
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
-}
-.clear-upload-btn {
-  font-size: 12px; color: #ef4444; font-weight: 700;
-  background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
-  padding: 6px 14px; border-radius: 99px;
+.clear-btn{
+  font-size:12px;color:#b84444;font-weight:500;
+  border:1px solid rgba(184,68,68,0.2);
+  padding:6px 16px;border-radius:99px;
+  background:rgba(184,68,68,0.06);
 }
 
-/* ══════════════════════════════════════════════════════════
-   RESULT CARD
-══════════════════════════════════════════════════════════ */
-.result-card {
-  background: var(--glass-bg); border: 1.5px solid var(--glass-border);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border-radius: 28px; padding: 20px;
-  box-shadow: 0 12px 40px rgba(124,58,237,0.15);
-  animation: resultSlide 0.4s cubic-bezier(.34,1.3,.64,1) both;
-  margin-top: 8px;
-}
-@keyframes resultSlide {
-  from { opacity:0; transform: translateY(20px) scale(0.97); }
-  to   { opacity:1; transform: translateY(0) scale(1); }
+/* ══ RESULT CARD ══ */
+.result-card{
+  border:1px solid var(--border);border-radius:var(--r-xl);
+  background:var(--white);padding:22px;
+  box-shadow:var(--shadow);
+  animation:slideUp 0.4s cubic-bezier(.34,1.2,.64,1) both;
+  margin-top:12px;
 }
 
-.result-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
-.result-thumb {
-  width: 72px; height: 72px; border-radius: 16px; object-fit: cover;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+.result-top{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.result-thumb{width:68px;height:68px;border-radius:var(--r-md);object-fit:cover;flex-shrink:0}
+.result-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-lt);margin-bottom:5px}
+.result-species{font-family:var(--ff-display);font-size:22px;font-weight:500;color:var(--ink);line-height:1.2;margin-bottom:4px}
+.result-pct{font-size:13px;font-weight:500;color:var(--sage-dk)}
+
+.conf-bar-wrap{margin-bottom:18px}
+.conf-bar-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-lt);margin-bottom:5px}
+.conf-bar-track{height:4px;background:var(--stone-lt);border-radius:4px;overflow:hidden}
+.conf-bar-fill{height:100%;border-radius:4px;background:var(--sage);transition:width 1s cubic-bezier(.4,0,.2,1)}
+
+.top-preds{margin-bottom:18px}
+.tp-head{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-lt);margin-bottom:10px}
+.tp-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.tp-n{
+  width:20px;height:20px;border-radius:50%;
+  border:1px solid var(--border-md);
+  font-size:10px;font-weight:500;color:var(--ink-md);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.result-meta { flex: 1; }
-.result-label {
-  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--text-lt); font-weight: 700; margin-bottom: 4px;
+.tp-name{flex:1;font-size:13px;color:var(--ink)}
+.tp-pct{font-size:12px;color:var(--ink-lt);font-weight:500}
+
+.fact-box{
+  background:var(--paper);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:16px;margin-bottom:18px;
 }
-.result-species {
-  font-family: var(--ff-display); font-size: 20px; font-weight: 700;
-  color: var(--text-dk); line-height: 1.2; margin-bottom: 4px;
+.fact-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-lt);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.fact-label i{font-size:13px}
+.fact-text{font-family:var(--ff-display);font-size:15px;font-style:italic;color:var(--ink-md);line-height:1.6}
+
+.save-btn{
+  width:100%;background:var(--ink);color:var(--white);
+  font-size:14px;font-weight:500;letter-spacing:0.3px;
+  padding:14px;border-radius:var(--r-md);
+  transition:background 0.15s,transform 0.15s;
 }
-.result-confidence {
-  font-size: 13px; font-weight: 700;
-  background: linear-gradient(90deg, var(--purple), var(--lavender));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+.save-btn:active{transform:scale(0.98)}
+.save-btn:disabled{opacity:0.45;cursor:default}
+
+/* ══ HISTORY PAGE ══ */
+.hist-list{display:flex;flex-direction:column;gap:10px}
+
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  padding:64px 20px;text-align:center;
+}
+.empty-icon-wrap{
+  width:72px;height:72px;border-radius:50%;
+  border:1px solid var(--border-md);background:var(--paper);
+  display:flex;align-items:center;justify-content:center;
+}
+.empty-icon-wrap i{font-size:30px;color:var(--ink-lt)}
+.empty-state h3{font-family:var(--ff-display);font-size:22px;font-weight:500;color:var(--ink)}
+.empty-state p{font-size:13px;color:var(--ink-lt);line-height:1.6}
+.cta-btn{
+  margin-top:4px;
+  background:var(--ink);color:var(--white);font-size:13px;font-weight:500;
+  padding:11px 28px;border-radius:99px;
+  transition:background 0.15s;
 }
 
-.progress-wrap { margin-bottom: 14px; }
-.progress-label {
-  display: flex; justify-content: space-between;
-  font-size: 11px; color: var(--text-lt); margin-bottom: 5px;
+.hist-item{
+  border:1px solid var(--border);border-radius:var(--r-lg);
+  background:var(--white);padding:14px;
+  display:flex;gap:14px;align-items:center;
+  animation:slideUp 0.3s ease both;
 }
-.progress-track {
-  height: 8px; background: rgba(192,132,252,0.15); border-radius: 99px; overflow: hidden;
+.hi-thumb{width:60px;height:60px;border-radius:var(--r-md);object-fit:cover;flex-shrink:0}
+.hi-thumb-ph{
+  width:60px;height:60px;border-radius:var(--r-md);flex-shrink:0;
+  background:var(--sage-lt);display:flex;align-items:center;justify-content:center;
 }
-.progress-bar {
-  height: 100%; border-radius: 99px;
-  background: linear-gradient(90deg, var(--purple), var(--pink));
-  transition: width 1s cubic-bezier(.4,0,.2,1);
-  box-shadow: 0 0 8px rgba(168,85,247,0.5);
+.hi-thumb-ph i{font-size:26px;color:var(--sage-dk)}
+.hi-info{flex:1;min-width:0}
+.hi-species{font-family:var(--ff-display);font-size:16px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.hi-pct{font-size:12px;color:var(--sage-dk);font-weight:500;margin-bottom:3px}
+.hi-date{font-size:11px;color:var(--ink-lt)}
+.del-btn{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(184,68,68,0.06);color:#b84444;
+  transition:background 0.15s;
 }
+.del-btn:active{background:rgba(184,68,68,0.15)}
+.del-btn i{font-size:17px}
 
-.top-predictions { margin-bottom: 14px; }
-.tp-label {
-  font-size: 11px; color: var(--text-lt); font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+/* ══ NAV DOCK ══ */
+.nav-dock{
+  position:relative;z-index:10;
+  height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-around;
+  padding:0 8px 8px;
+  background:var(--glass);
+  border-top:1px solid var(--border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
 }
-.tp-item {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 18px;border-radius:var(--r-md);flex:1;
+  transition:background 0.2s;color:var(--ink-lt);
 }
-.tp-rank {
-  width: 20px; height: 20px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--lavender), var(--purple));
-  color: #fff; font-size: 10px; font-weight: 800;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.tp-name { flex: 1; font-size: 12px; color: var(--text-dk); font-weight: 600; }
-.tp-pct  { font-size: 12px; color: var(--text-lt); font-weight: 700; }
+.nav-item i{font-size:22px;transition:color 0.2s}
+.nav-label{font-size:10px;font-weight:500;letter-spacing:0.3px;transition:color 0.2s}
+.nav-item.active{background:var(--paper)}
+.nav-item.active i,.nav-item.active .nav-label{color:var(--ink)}
 
-.fun-fact-card {
-  background: linear-gradient(135deg, rgba(192,132,252,0.15), rgba(249,168,212,0.15));
-  border: 1px solid rgba(192,132,252,0.3);
-  border-radius: 16px; padding: 14px;
+/* ══ ANALYZING OVERLAY ══ */
+.analyzing-overlay{
+  position:absolute;inset:0;z-index:20;
+  background:rgba(250,247,244,0.88);backdrop-filter:blur(8px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;border-radius:inherit;
+  animation:fadeIn 0.2s ease;
 }
-.ff-header { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
-.ff-icon { font-size: 16px; }
-.ff-title { font-size: 11px; font-weight: 800; color: var(--purple); text-transform: uppercase; letter-spacing: 1px; }
-.ff-text { font-size: 12px; color: var(--text-md); line-height: 1.6; }
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.analyzing-spinner i{
+  font-size:36px;color:var(--sage-dk);
+  animation:spinPulse 1.4s ease-in-out infinite;
+}
+@keyframes spinPulse{0%,100%{transform:rotate(-10deg) scale(1);opacity:1}50%{transform:rotate(10deg) scale(1.1);opacity:0.7}}
+.analyzing-text{font-size:13px;color:var(--ink-md);font-weight:500;letter-spacing:0.3px}
 
-.save-btn {
-  width: 100%; margin-top: 14px;
-  background: linear-gradient(135deg, var(--purple), var(--lavender));
-  color: #fff; font-size: 14px; font-weight: 800;
-  padding: 14px; border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(168,85,247,0.35);
-  transition: transform 0.2s, box-shadow 0.2s;
+/* ══ TOAST ══ */
+.toast{
+  position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(12px);
+  background:var(--ink);color:var(--white);
+  padding:9px 18px;border-radius:99px;font-size:13px;font-weight:400;
+  z-index:9999;white-space:nowrap;pointer-events:none;
+  transition:opacity 0.25s,transform 0.25s;opacity:0;
 }
-.save-btn:active { transform: scale(0.97); }
-.save-btn:disabled { opacity: 0.5; cursor: default; }
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ══════════════════════════════════════════════════════════
-   HISTORY PAGE
-══════════════════════════════════════════════════════════ */
-.history-list { display: flex; flex-direction: column; gap: 12px; }
-
-.empty-state {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 10px; padding: 60px 20px; text-align: center;
-}
-.empty-emoji { font-size: 56px; animation: logoFloat 4s ease-in-out infinite; }
-.empty-state h3 { font-family: var(--ff-display); font-size: 22px; color: var(--text-dk); }
-.empty-state p  { font-size: 13px; color: var(--text-lt); line-height: 1.6; }
-.cta-btn {
-  margin-top: 8px;
-  background: linear-gradient(135deg, var(--purple), var(--lavender));
-  color: #fff; font-size: 14px; font-weight: 800;
-  padding: 12px 28px; border-radius: 99px;
-  box-shadow: 0 4px 20px rgba(168,85,247,0.3);
-}
-
-.history-item {
-  background: var(--glass-bg); border: 1.5px solid var(--glass-border);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-radius: var(--radius-xl); padding: 14px;
-  display: flex; gap: 14px; align-items: center;
-  box-shadow: var(--shadow-card);
-  animation: resultSlide 0.3s ease both;
-}
-.hi-thumb {
-  width: 64px; height: 64px; border-radius: 14px; object-fit: cover; flex-shrink: 0;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-.hi-info { flex: 1; min-width: 0; }
-.hi-species {
-  font-family: var(--ff-display); font-size: 15px; font-weight: 700;
-  color: var(--text-dk); margin-bottom: 3px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.hi-confidence {
-  font-size: 12px; font-weight: 700;
-  color: var(--purple); margin-bottom: 4px;
-}
-.hi-date { font-size: 11px; color: var(--text-lt); }
-.hi-delete {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(239,68,68,0.08); color: #ef4444;
-  font-size: 16px; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: background 0.15s;
-}
-.hi-delete:active { background: rgba(239,68,68,0.2); }
-
-/* ══════════════════════════════════════════════════════════
-   FLOATING NAV DOCK
-══════════════════════════════════════════════════════════ */
-.nav-dock {
-  position: relative; z-index: 10;
-  height: var(--nav-h);
-  display: flex; align-items: center; justify-content: space-around;
-  padding: 0 12px 8px;
-  background: var(--glass-bg); border-top: 1.5px solid var(--glass-border);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 -8px 32px rgba(124,58,237,0.12);
-}
-
-.nav-item {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 8px 20px; border-radius: 18px;
-  transition: all 0.25s cubic-bezier(.34,1.3,.64,1);
-  flex: 1;
-}
-.nav-icon  { font-size: 22px; line-height: 1; }
-.nav-label { font-size: 10px; font-weight: 700; color: var(--text-lt); letter-spacing: 0.3px; }
-
-.nav-item.active {
-  background: linear-gradient(135deg, rgba(168,85,247,0.18), rgba(249,168,212,0.18));
-  box-shadow: 0 2px 12px rgba(168,85,247,0.2);
-}
-.nav-item.active .nav-label { color: var(--purple-dk); }
-.nav-item.active .nav-icon  { filter: drop-shadow(0 0 6px rgba(168,85,247,0.6)); }
-
-/* ══════════════════════════════════════════════════════════
-   STATUS DOT
-══════════════════════════════════════════════════════════ */
-.status-dot {
-  width: 10px; height: 10px; border-radius: 50%; display: block;
-}
-.status-dot.loading { background: #fbbf24; animation: dotPulse 1s ease infinite; }
-.status-dot.ready   { background: #34d399; }
-.status-dot.error   { background: #f87171; }
-@keyframes dotPulse {
-  0%,100% { opacity:1; transform:scale(1); }
-  50%      { opacity:0.5; transform:scale(0.8); }
-}
-
-/* ══════════════════════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════════════════════ */
-.toast {
-  position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%) translateY(20px);
-  background: rgba(60,10,100,0.9); color: #fff;
-  padding: 10px 20px; border-radius: 99px; font-size: 13px; font-weight: 600;
-  backdrop-filter: blur(12px); z-index: 9999; white-space: nowrap;
-  transition: opacity 0.3s, transform 0.3s;
-  pointer-events: none;
-}
-.toast.show { opacity:1; transform: translateX(-50%) translateY(0); }
-.toast.hidden { opacity:0; }
-
-/* ══════════════════════════════════════════════════════════
-   HOME HISTORY MINI CARDS
-══════════════════════════════════════════════════════════ */
-.home-hi-card {
-  background: var(--glass-bg); border: 1.5px solid var(--glass-border);
-  backdrop-filter: blur(10px); border-radius: var(--radius-lg);
-  padding: 12px; display: flex; gap: 12px; align-items: center;
-  box-shadow: var(--shadow-card); animation: resultSlide 0.3s ease both;
-}
-.home-hi-thumb {
-  width: 48px; height: 48px; border-radius: 12px; object-fit: cover;
-}
-.home-hi-name { font-size: 13px; font-weight: 700; color: var(--text-dk); }
-.home-hi-pct  { font-size: 12px; color: var(--purple); font-weight: 600; }
-
-/* ══════════════════════════════════════════════════════════
-   LOADING OVERLAY
-══════════════════════════════════════════════════════════ */
-.analyzing-overlay {
-  position: absolute; inset: 0; z-index: 20;
-  background: rgba(253,244,255,0.8); backdrop-filter: blur(8px);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 16px; border-radius: 28px;
-  animation: fadeIn 0.2s ease;
-}
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-.analyzing-spinner {
-  font-size: 48px; animation: spinnerFloat 1s ease-in-out infinite;
-}
-@keyframes spinnerFloat {
-  0%,100% { transform: scale(1) rotate(-10deg); }
-  50%      { transform: scale(1.15) rotate(10deg); }
-}
-.analyzing-text { font-size: 14px; font-weight: 700; color: var(--purple); }
-
-/* ══════════════════════════════════════════════════════════
-   RESPONSIVE DESKTOP CENTERING
-══════════════════════════════════════════════════════════ */
-@media (min-width: 480px) {
-  body { background: linear-gradient(135deg, #f5d0fe, #e0f2fe); }
-  #app {
-    top: 50%; left: 50%; transform: translate(-50%,-50%);
-    width: 420px; height: min(820px, 96vh);
-    border-radius: 36px;
-    box-shadow: 0 32px 80px rgba(124,58,237,0.25);
+/* ══ DESKTOP ══ */
+@media(min-width:480px){
+  body{background:var(--stone-lt)}
+  #app{
+    top:50%;left:50%;transform:translate(-50%,-50%);
+    width:420px;height:min(820px,96vh);
+    border-radius:36px;border:1px solid var(--border-md);
+    box-shadow:0 32px 80px rgba(44,36,32,0.14);
   }
-  #splash {
-    background: transparent;
-  }
+  #splash{background:var(--stone-lt)}
+  .toast{bottom:100px}
 }
-  <style/>
+</style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════ SPLASH SCREEN -->
+<!-- SPLASH -->
 <div id="splash">
-  <div class="splash-bg"></div>
-  <div class="splash-butterflies">
-    <span class="sb sb1">🦋</span>
-    <span class="sb sb2">🦋</span>
-    <span class="sb sb3">🦋</span>
-    <span class="sb sb4">🦋</span>
-    <span class="sb sb5">🦋</span>
-  </div>
-  <div class="splash-content">
-    <div class="splash-logo">
-      <div class="logo-ring"></div>
-      <span class="logo-emoji">🦋</span>
+  <div class="splash-inner">
+    <div class="splash-mark"><i class="ti ti-butterfly"></i></div>
+    <div>
+      <div class="splash-wordmark">Flutter</div>
+      <div class="splash-sub" style="text-align:center;margin-top:4px">Butterfly Identifier</div>
     </div>
-    <h1 class="splash-title">Flutter</h1>
-    <p class="splash-sub">Butterfly Species Identifier</p>
-    <div class="splash-loader">
-      <div class="loader-track"><div class="loader-fill"></div></div>
-      <p class="loader-text">Loading AI model…</p>
+    <div class="splash-bar-wrap">
+      <div class="splash-bar-track"><div class="splash-bar-fill"></div></div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════ APP SHELL -->
+<!-- APP -->
 <div id="app" class="hidden">
+<main id="pages">
 
-  <!-- Ambient animated background -->
-  <div class="ambient-bg">
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-    <div class="orb orb3"></div>
-  </div>
-  <div class="bg-butterflies" aria-hidden="true">
-    <span class="bb bb1">🦋</span>
-    <span class="bb bb2">🦋</span>
-    <span class="bb bb3">🦋</span>
-    <span class="bb bb4">🦋</span>
-    <span class="bb bb5">🦋</span>
-    <span class="bb bb6">🌸</span>
-    <span class="bb bb7">🌿</span>
-    <span class="bb bb8">🌸</span>
-  </div>
-
-  <!-- ─── PAGES ─── -->
-  <main id="pages">
-
-    <!-- HOME PAGE -->
-    <section class="page active" id="page-home">
-      <div class="page-scroll">
-        <header class="home-header">
-          <div class="header-pill">
-            <span class="header-emoji">🦋</span>
-            <span>Flutter</span>
-          </div>
-          <button class="icon-btn" id="model-status-btn" title="Model status">
-            <span id="model-dot" class="status-dot loading"></span>
-          </button>
-        </header>
-
-        <div class="hero-card">
-          <div class="hero-bg-blob"></div>
-          <div class="hero-text">
-            <p class="hero-eyebrow">AI-Powered</p>
-            <h2 class="hero-title">Discover<br/><em>Butterflies</em></h2>
-            <p class="hero-desc">Point your camera at a butterfly or upload a photo to identify the species instantly.</p>
-          </div>
-          <div class="hero-illustration">🦋</div>
+  <!-- HOME -->
+  <section class="page active" id="page-home">
+    <div class="scroll">
+      <div class="home-top">
+        <div class="home-brand">
+          <div class="home-brand-mark"><i class="ti ti-butterfly"></i></div>
+          <span class="home-brand-name">Flutter</span>
         </div>
+        <button class="icon-btn" id="model-status-btn" title="AI status">
+          <span id="model-dot" class="status-dot loading"></span>
+        </button>
+      </div>
 
-        <div class="quick-actions">
-          <button class="qa-btn qa-camera" onclick="navigateTo('camera')">
-            <div class="qa-icon">📷</div>
-            <span>Live Camera</span>
-          </button>
-          <button class="qa-btn qa-upload" onclick="navigateTo('upload')">
-            <div class="qa-icon">🖼️</div>
-            <span>Upload Image</span>
-          </button>
-        </div>
+      <div class="hero">
+        <p class="hero-eyebrow">AI-Powered</p>
+        <h1 class="hero-title">Discover<br/><em>Butterflies</em></h1>
+        <p class="hero-desc">Point your camera or upload a photo to identify the species in seconds.</p>
+        <svg class="hero-wing" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M50 40 C30 10 0 15 5 35 C10 55 35 55 50 40Z" fill="currentColor" opacity="0.6"/>
+          <path d="M50 40 C70 10 100 15 95 35 C90 55 65 55 50 40Z" fill="currentColor" opacity="0.6"/>
+          <path d="M50 40 C32 55 18 75 30 78 C42 81 48 60 50 40Z" fill="currentColor" opacity="0.4"/>
+          <path d="M50 40 C68 55 82 75 70 78 C58 81 52 60 50 40Z" fill="currentColor" opacity="0.4"/>
+        </svg>
+      </div>
 
-        <div class="section-label">Recent Scans</div>
-        <div id="home-history-preview" class="home-history-preview">
-          <div class="empty-state-sm">
-            <span>🌿</span>
-            <p>No scans yet — go explore!</p>
+      <div class="actions-grid">
+        <button class="action-card" onclick="navigateTo('camera')">
+          <div class="action-icon cam"><i class="ti ti-camera" aria-hidden="true"></i></div>
+          <div>
+            <div class="action-label">Live Camera</div>
+            <div class="action-sub">Capture in real time</div>
           </div>
-        </div>
+        </button>
+        <button class="action-card" onclick="navigateTo('upload')">
+          <div class="action-icon upl"><i class="ti ti-photo-up" aria-hidden="true"></i></div>
+          <div>
+            <div class="action-label">Upload Photo</div>
+            <div class="action-sub">From your gallery</div>
+          </div>
+        </button>
+      </div>
 
-        <div class="garden-decoration">
-          <span>🌸</span><span>🌿</span><span>🌺</span><span>🍃</span><span>🌸</span>
+      <div class="section-head">Recent scans</div>
+      <div class="home-hist" id="home-history-preview">
+        <div class="empty-sm">
+          <i class="ti ti-plant-2" aria-hidden="true"></i>
+          <span>No scans yet — go explore!</span>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- CAMERA PAGE -->
-    <section class="page" id="page-camera">
-      <div class="page-scroll">
-        <div class="page-topbar">
-          <button class="back-btn" onclick="navigateTo('home')">‹</button>
-          <h2 class="page-title">Live Camera</h2>
-          <div></div>
-        </div>
-
-        <div class="camera-container">
-          <div class="camera-frame">
-            <video id="camera-video" autoplay playsinline muted></video>
-            <canvas id="camera-canvas" class="hidden"></canvas>
-            <div class="scan-border"></div>
-            <div class="corner c-tl"></div>
-            <div class="corner c-tr"></div>
-            <div class="corner c-bl"></div>
-            <div class="corner c-br"></div>
-            <div class="scan-line" id="scan-line"></div>
-          </div>
-          <p class="camera-hint">Position butterfly in frame</p>
-        </div>
-
-        <div class="camera-controls">
-          <button class="cam-switch-btn" id="cam-switch-btn" title="Switch camera">🔄</button>
-          <button class="capture-btn" id="capture-btn">
-            <div class="capture-inner">
-              <span>🦋</span>
-            </div>
-          </button>
-          <button class="cam-torch-btn" id="cam-torch-btn" title="Flash">⚡</button>
-        </div>
-
-        <div id="camera-result" class="result-card hidden"></div>
+  <!-- CAMERA -->
+  <section class="page" id="page-camera">
+    <div class="scroll">
+      <div class="topbar">
+        <button class="icon-btn" onclick="navigateTo('home')" aria-label="Back"><i class="ti ti-arrow-left"></i></button>
+        <span class="topbar-title">Live Camera</span>
+        <div style="width:38px"></div>
       </div>
-    </section>
 
-    <!-- UPLOAD PAGE -->
-    <section class="page" id="page-upload">
-      <div class="page-scroll">
-        <div class="page-topbar">
-          <button class="back-btn" onclick="navigateTo('home')">‹</button>
-          <h2 class="page-title">Upload Image</h2>
-          <div></div>
+      <div class="cam-wrap">
+        <div class="cam-frame">
+          <video id="camera-video" autoplay playsinline muted></video>
+          <canvas id="camera-canvas" class="hidden"></canvas>
+          <div class="corner c-tl"></div><div class="corner c-tr"></div>
+          <div class="corner c-bl"></div><div class="corner c-br"></div>
+          <div class="scan-line" id="scan-line"></div>
         </div>
-
-        <div class="upload-zone" id="upload-zone">
-          <input type="file" id="file-input" accept="image/*" class="hidden" />
-          <div class="upload-illustration">
-            <div class="upload-circle">
-              <span class="upload-emoji">🦋</span>
-            </div>
-          </div>
-          <h3 class="upload-title">Tap to choose a photo</h3>
-          <p class="upload-hint">JPG, PNG, WEBP supported</p>
-        </div>
-
-        <div id="upload-preview-wrap" class="upload-preview-wrap hidden">
-          <img id="upload-preview" class="upload-preview-img" alt="Preview" />
-          <button class="clear-upload-btn" id="clear-upload-btn">✕ Clear</button>
-        </div>
-
-        <div id="upload-result" class="result-card hidden"></div>
+        <p class="cam-hint">Position butterfly in frame, then capture</p>
       </div>
-    </section>
 
-    <!-- HISTORY PAGE -->
-    <section class="page" id="page-history">
-      <div class="page-scroll">
-        <div class="page-topbar">
-          <div></div>
-          <h2 class="page-title">My Garden</h2>
-          <button class="icon-btn danger" id="clear-all-btn" title="Clear all">🗑️</button>
-        </div>
+      <div class="cam-controls">
+        <button class="cam-aux" id="cam-switch-btn" aria-label="Switch camera"><i class="ti ti-camera-rotate"></i></button>
+        <button class="capture-btn" id="capture-btn" aria-label="Capture photo">
+          <i class="ti ti-camera"></i>
+        </button>
+        <button class="cam-aux" id="cam-torch-btn" aria-label="Toggle flash"><i class="ti ti-bolt"></i></button>
+      </div>
 
-        <div id="history-list" class="history-list">
-          <div class="empty-state">
-            <div class="empty-emoji">🌿</div>
-            <h3>Your garden is empty</h3>
-            <p>Identified butterflies will appear here</p>
-            <button class="cta-btn" onclick="navigateTo('camera')">Start Scanning</button>
-          </div>
+      <div id="camera-result" class="result-card hidden"></div>
+    </div>
+  </section>
+
+  <!-- UPLOAD -->
+  <section class="page" id="page-upload">
+    <div class="scroll">
+      <div class="topbar">
+        <button class="icon-btn" onclick="navigateTo('home')" aria-label="Back"><i class="ti ti-arrow-left"></i></button>
+        <span class="topbar-title">Upload Photo</span>
+        <div style="width:38px"></div>
+      </div>
+
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" id="file-input" accept="image/*" class="hidden"/>
+        <div class="upload-ring"><i class="ti ti-cloud-upload" aria-hidden="true"></i></div>
+        <div>
+          <div class="upload-title" style="text-align:center">Tap to choose a photo</div>
+          <div class="upload-hint" style="text-align:center;margin-top:4px">JPG · PNG · WEBP</div>
         </div>
       </div>
-    </section>
 
-  </main>
+      <div id="upload-preview-wrap" class="preview-wrap hidden">
+        <img id="upload-preview" class="preview-img" alt="Preview"/>
+        <button class="clear-btn" id="clear-upload-btn">
+          <i class="ti ti-x" style="font-size:12px;vertical-align:-1px"></i> Clear
+        </button>
+      </div>
 
-  <!-- ─── FLOATING NAV DOCK ─── -->
-  <nav class="nav-dock" id="nav-dock">
-    <button class="nav-item active" data-page="home">
-      <span class="nav-icon">🏡</span>
-      <span class="nav-label">Home</span>
-    </button>
-    <button class="nav-item" data-page="camera">
-      <span class="nav-icon">📷</span>
-      <span class="nav-label">Camera</span>
-    </button>
-    <button class="nav-item" data-page="upload">
-      <span class="nav-icon">🖼️</span>
-      <span class="nav-label">Upload</span>
-    </button>
-    <button class="nav-item" data-page="history">
-      <span class="nav-icon">📖</span>
-      <span class="nav-label">Garden</span>
-    </button>
-  </nav>
+      <div id="upload-result" class="result-card hidden"></div>
+    </div>
+  </section>
 
+  <!-- HISTORY -->
+  <section class="page" id="page-history">
+    <div class="scroll">
+      <div class="topbar">
+        <div style="width:38px"></div>
+        <span class="topbar-title">My Garden</span>
+        <button class="icon-btn danger" id="clear-all-btn" aria-label="Clear all"><i class="ti ti-trash"></i></button>
+      </div>
+      <div id="history-list" class="hist-list"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- NAV DOCK -->
+<nav class="nav-dock">
+  <button class="nav-item active" data-page="home">
+    <i class="ti ti-home-2" aria-hidden="true"></i>
+    <span class="nav-label">Home</span>
+  </button>
+  <button class="nav-item" data-page="camera">
+    <i class="ti ti-camera" aria-hidden="true"></i>
+    <span class="nav-label">Camera</span>
+  </button>
+  <button class="nav-item" data-page="upload">
+    <i class="ti ti-photo" aria-hidden="true"></i>
+    <span class="nav-label">Upload</span>
+  </button>
+  <button class="nav-item" data-page="history">
+    <i class="ti ti-leaf" aria-hidden="true"></i>
+    <span class="nav-label">Garden</span>
+  </button>
+</nav>
 </div>
 
-<!-- ═══════════════════════════════════════ MODEL STATUS TOAST -->
-<div id="toast" class="toast hidden"></div>
+<div id="toast" class="toast"></div>
 
 <script>
-/* ══════════════════════════════════════════════════════════
-   Flutter — Butterfly Identifier  |  app.js
-   Full TensorFlow.js integration + UI logic
-══════════════════════════════════════════════════════════ */
-
 'use strict';
 
-/* ─── STATE ─── */
 const State = {
-  MODEL_URL:    './trained_model/model.json',
-  METADATA_URL: './trained_model/metadata.json',
-  model:       null,
-  labels:      [],
   stream:      null,
   facingMode:  'environment',
   torchOn:     false,
   currentPage: 'home',
   history:     JSON.parse(localStorage.getItem('bf_history') || '[]'),
+  model:       null,
+  labels:      [],
+  aiReady:     false,
 };
 
-/* ─── FUN FACTS (fallback per common butterfly names) ─── */
 const FUN_FACTS = [
-  "Butterflies taste with their feet — they have chemoreceptors on their tarsi!",
-  "A group of butterflies is called a 'kaleidoscope' or 'flutter'.",
-  "Butterflies can see ultraviolet light patterns invisible to the human eye.",
-  "Some butterflies migrate thousands of miles each season.",
-  "Butterfly wings are actually transparent — the colours come from tiny reflective scales.",
-  "They can only fly if their body temperature is above 29°C.",
-  "The largest butterfly wingspan reaches nearly 30 cm in the Queen Alexandra's Birdwing.",
-  "Butterflies drink from mud puddles to absorb minerals — a behaviour called 'puddling'.",
-  "Most adult butterflies live only 2–4 weeks, though some overwinter for 6–8 months.",
-  "Monarch butterflies navigate using both the sun and Earth's magnetic field.",
+  "Butterflies taste with their feet — chemoreceptors on their tarsi detect host plants.",
+  "A group of butterflies is called a 'kaleidoscope'.",
+  "Butterfly wings are transparent — the colours come from thousands of tiny reflective scales.",
+  "Some species migrate thousands of miles each season, guided by the sun and Earth's magnetic field.",
+  "They can only fly when their body temperature exceeds 29 °C.",
+  "The largest butterfly, Queen Alexandra's Birdwing, has a wingspan of nearly 30 cm.",
+  "Butterflies drink from mud to absorb minerals — a behaviour known as 'puddling'.",
+  "Most adult butterflies live only 2–4 weeks, though some overwinter for months.",
+  "Butterflies see ultraviolet patterns on flowers invisible to the human eye.",
+  "The iridescent blue of a Morpho butterfly comes from nanostructures, not pigment.",
 ];
 
-/* ════════════════════════════════════════════════════════
-   BOOT — load model + splash dismiss
-════════════════════════════════════════════════════════ */
+/* ── BOOT ── */
 async function boot() {
-  try {
-    await loadModel();
-  } catch (e) {
-    console.warn('Model load failed:', e);
-    setModelStatus('error');
-  }
-
-  // Wait for loader animation then dismiss splash
-  await delay(2800);
+  await loadModel();
   dismissSplash();
-}
-
-async function loadModel() {
-  try {
-    // Fetch metadata
-    const metaResp = await fetch(State.METADATA_URL);
-    if (!metaResp.ok) throw new Error(`Metadata HTTP ${metaResp.status}`);
-    const meta = await metaResp.json();
-    State.labels = meta.labels || [];
-    console.log('✅ Labels loaded:', State.labels);
-
-    // Load model
-    State.model = await tf.loadLayersModel(State.MODEL_URL);
-
-    // Warm-up prediction (fixes first-run slowness)
-    const dummy = tf.zeros([1, 224, 224, 3]);
-    State.model.predict(dummy).dispose();
-    dummy.dispose();
-
-    console.log('✅ Model loaded successfully');
-    setModelStatus('ready');
-    showToast('🦋 AI model ready!');
-  } catch (e) {
-    console.warn('Model load failed:', e);
-    setModelStatus('error');
-    showToast('⚠️ Demo mode — no model found');
-    State.model = null;
-    if (State.labels.length === 0) State.labels = generateFallbackLabels();
-  }
-}
-
-function generateFallbackLabels() {
-  return [
-    'Monarch', 'Blue Morpho', 'Painted Lady', 'Swallowtail',
-    'Red Admiral', 'Cabbage White', 'Common Brimstone',
-    'Peacock', 'Small Tortoiseshell', 'Orange-tip',
-    'Purple Emperor', 'Clouded Yellow', 'Comma',
-    'Grayling', 'Marbled White', 'Meadow Brown',
-  ];
 }
 
 function dismissSplash() {
   const splash = document.getElementById('splash');
-  const app    = document.getElementById('app');
   splash.classList.add('fade-out');
-  app.classList.remove('hidden');
-  setTimeout(() => splash.style.display = 'none', 700);
+  document.getElementById('app').classList.remove('hidden');
+  setTimeout(() => splash.style.display = 'none', 650);
   renderHomeHistory();
 }
 
-/* ════════════════════════════════════════════════════════
-   PREDICTION ENGINE
-════════════════════════════════════════════════════════ */
-async function predict(imageEl) {
-  if (!State.model) return demoPredict();
+async function loadModel() {
+  try {
+    // Load labels from metadata.json
+    const metaResp = await fetch('./trained_model/metadata.json');
+    if (!metaResp.ok) throw new Error('metadata.json not found');
+    const meta = await metaResp.json();
+    State.labels = meta.labels || [];
 
-  return tf.tidy(() => {
+    // Load TF.js model
+    State.model = await tf.loadLayersModel('./trained_model/model.json');
+
+    // Warm-up pass to avoid slow first prediction
+    const dummy = tf.zeros([1, 224, 224, 3]);
+    State.model.predict(dummy).dispose();
+    dummy.dispose();
+
+    setModelStatus('ready');
+    showToast('Model loaded — ready to identify!');
+    State.aiReady = true;
+  } catch (err) {
+    console.error('Model load error:', err);
+    setModelStatus('error');
+    showToast('Could not load model — check trained_model/ folder');
+    State.aiReady = false;
+  }
+}
+
+/* ── TF.JS PREDICTION ── */
+async function identifyButterfly(imageEl) {
+  if (!State.model) {
+    showToast('Model not loaded — check your files');
+    return null;
+  }
+
+  const scores = tf.tidy(() => {
     const tensor = tf.browser.fromPixels(imageEl)
       .resizeBilinear([224, 224])
       .toFloat()
-      .div(127.5)   // ← your FlowerKnows uses div(127.5).sub(1), not div(255)
+      .div(127.5)
       .sub(1)
       .expandDims(0);
-
-    const output = State.model.predict(tensor);
-    const scores = Array.from(output.dataSync());
-    return buildTopK(scores, 3);
+    return Array.from(State.model.predict(tensor).dataSync());
   });
-}
 
-function demoPredict() {
-  // Simulate predictions for demo/test
-  const n = State.labels.length;
-  let scores = Array.from({ length: n }, () => Math.random());
-  const sum = scores.reduce((a, b) => a + b, 0);
-  scores = scores.map(s => s / sum);
-  return buildTopK(scores, 3);
-}
-
-function buildTopK(scores, k) {
-  const indexed = scores.map((s, i) => ({ score: s, label: State.labels[i] || `Species ${i + 1}` }));
+  // Build top-3 predictions
+  const indexed = scores.map((score, i) => ({
+    label: State.labels[i] || `Species ${i + 1}`,
+    score,
+  }));
   indexed.sort((a, b) => b.score - a.score);
-  return indexed.slice(0, k);
+  const top3 = indexed.slice(0, 3);
+
+  return {
+    predictions: top3,
+    fact: FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)],
+  };
 }
 
-/* ════════════════════════════════════════════════════════
-   CAMERA PAGE
-════════════════════════════════════════════════════════ */
+/* ── CAMERA ── */
 async function startCamera() {
   stopCamera();
   const video = document.getElementById('camera-video');
@@ -1082,49 +762,41 @@ async function startCamera() {
     });
     video.srcObject = State.stream;
   } catch (e) {
-    showToast('📷 Camera access denied');
+    showToast('Camera access denied');
     console.error(e);
   }
 }
 
 function stopCamera() {
-  if (State.stream) {
-    State.stream.getTracks().forEach(t => t.stop());
-    State.stream = null;
-  }
+  if (State.stream) { State.stream.getTracks().forEach(t => t.stop()); State.stream = null; }
 }
 
-async function captureAndPredict() {
+async function captureAndIdentify() {
   const video  = document.getElementById('camera-video');
   const canvas = document.getElementById('camera-canvas');
-  if (!video.srcObject) { showToast('📷 Start camera first'); return; }
+  if (!video.srcObject) { showToast('Start camera first'); return; }
 
-  // Start scan animation
-  const scanLine = document.getElementById('scan-line');
-  scanLine.classList.add('scanning');
-
-  // Show analyzing overlay on camera frame
-  const frame = document.querySelector('.camera-frame');
+  document.getElementById('scan-line').classList.add('scanning');
+  const frame  = document.querySelector('.cam-frame');
   const overlay = showAnalyzingOverlay(frame);
 
-  // Draw frame to canvas
-  canvas.width  = video.videoWidth  || 224;
-  canvas.height = video.videoHeight || 224;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  canvas.width  = video.videoWidth  || 640;
+  canvas.height = video.videoHeight || 640;
+  canvas.getContext('2d').drawImage(video, 0, 0);
   const dataURL = canvas.toDataURL('image/jpeg', 0.9);
 
-  // Create temp image for TF
+  // Create image element for TF.js (needs HTMLImageElement)
   const img = new Image();
   img.src = dataURL;
   await new Promise(r => { img.onload = r; });
 
-  const results = await predict(img);
+  const result = await identifyButterfly(img);
 
-  scanLine.classList.remove('scanning');
+  document.getElementById('scan-line').classList.remove('scanning');
   removeAnalyzingOverlay(overlay);
 
-  renderResult('camera-result', dataURL, results);
+  if (!result) { showToast('Identification failed — try again'); return; }
+  renderResult('camera-result', dataURL, result);
 }
 
 document.getElementById('cam-switch-btn').addEventListener('click', () => {
@@ -1135,43 +807,29 @@ document.getElementById('cam-switch-btn').addEventListener('click', () => {
 document.getElementById('cam-torch-btn').addEventListener('click', async () => {
   if (!State.stream) return;
   const track = State.stream.getVideoTracks()[0];
-  if (!track) return;
   State.torchOn = !State.torchOn;
   try {
     await track.applyConstraints({ advanced: [{ torch: State.torchOn }] });
-    document.getElementById('cam-torch-btn').style.opacity = State.torchOn ? '0.5' : '1';
-  } catch (_) {
-    showToast('Torch not available');
-  }
+    document.getElementById('cam-torch-btn').style.opacity = State.torchOn ? '0.45' : '1';
+  } catch (_) { showToast('Flash not available'); }
 });
 
-document.getElementById('capture-btn').addEventListener('click', captureAndPredict);
+document.getElementById('capture-btn').addEventListener('click', captureAndIdentify);
 
-/* ════════════════════════════════════════════════════════
-   UPLOAD PAGE
-════════════════════════════════════════════════════════ */
+/* ── UPLOAD ── */
 const uploadZone  = document.getElementById('upload-zone');
 const fileInput   = document.getElementById('file-input');
 const previewWrap = document.getElementById('upload-preview-wrap');
 const previewImg  = document.getElementById('upload-preview');
 
 uploadZone.addEventListener('click', () => fileInput.click());
-
-uploadZone.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  uploadZone.classList.add('drag-over');
-});
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
 uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-uploadZone.addEventListener('drop', (e) => {
-  e.preventDefault();
-  uploadZone.classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if (file) handleFile(file);
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault(); uploadZone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
 });
-
-fileInput.addEventListener('change', (e) => {
-  if (e.target.files[0]) handleFile(e.target.files[0]);
-});
+fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
 
 document.getElementById('clear-upload-btn').addEventListener('click', () => {
   fileInput.value = '';
@@ -1181,293 +839,247 @@ document.getElementById('clear-upload-btn').addEventListener('click', () => {
 });
 
 async function handleFile(file) {
-  if (!file.type.startsWith('image/')) { showToast('⚠️ Please select an image'); return; }
-
+  if (!file.type.startsWith('image/')) { showToast('Please select an image'); return; }
   const url = URL.createObjectURL(file);
   previewImg.src = url;
   previewWrap.classList.remove('hidden');
   uploadZone.classList.add('hidden');
 
-  // Wait for image to load
   await new Promise(r => { previewImg.onload = r; });
 
-  // Show overlay
+  // Draw to canvas resized to 224x224 for TF.js
+  const canvas = document.createElement('canvas');
+  canvas.width = 224; canvas.height = 224;
+  canvas.getContext('2d').drawImage(previewImg, 0, 0, 224, 224);
+
+  // Create image element from canvas for TF.js
+  const tfImg = new Image();
+  tfImg.src = canvas.toDataURL('image/jpeg', 0.95);
+  await new Promise(r => { tfImg.onload = r; });
+
   const overlay = showAnalyzingOverlay(previewWrap);
-  const results = await predict(previewImg);
+  const result = await identifyButterfly(tfImg);
   removeAnalyzingOverlay(overlay);
 
-  renderResult('upload-result', previewImg.src, results);
+  if (!result) { showToast('Identification failed — try again'); return; }
+  renderResult('upload-result', previewImg.src, result);
 }
 
-/* ════════════════════════════════════════════════════════
-   RESULT CARD RENDERER
-════════════════════════════════════════════════════════ */
-function renderResult(containerId, imageURL, results) {
+/* ── RESULT RENDERER ── */
+function renderResult(containerId, imageURL, apiResult) {
   const container = document.getElementById(containerId);
   container.classList.remove('hidden');
 
-  const top    = results[0];
-  const pct    = (top.score * 100).toFixed(1);
-  const fact   = FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)];
-  const saveId = `save_${Date.now()}`;
+  const preds = apiResult.predictions || [];
+  const top   = preds[0] || { label: 'Unknown', score: 0 };
+  const pct   = (top.score * 100).toFixed(1);
+  const fact  = apiResult.fact || FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)];
+  const saveId = `s${Date.now()}`;
 
   container.innerHTML = `
     <div class="result-top">
-      <img class="result-thumb" src="${imageURL}" alt="${top.label}" />
-      <div class="result-meta">
-        <div class="result-label">🦋 Identified Species</div>
+      <img class="result-thumb" src="${imageURL}" alt="${top.label}"/>
+      <div>
+        <div class="result-label">Identified species</div>
         <div class="result-species">${top.label}</div>
-        <div class="result-confidence">${pct}% confidence</div>
+        <div class="result-pct">${pct}% confidence</div>
       </div>
     </div>
 
-    <div class="progress-wrap">
-      <div class="progress-label">
-        <span>Confidence</span><span>${pct}%</span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-bar" id="pb_${saveId}" style="width:0%"></div>
+    <div class="conf-bar-wrap">
+      <div class="conf-bar-labels"><span>Confidence</span><span>${pct}%</span></div>
+      <div class="conf-bar-track">
+        <div class="conf-bar-fill" id="cb_${saveId}" style="width:0%"></div>
       </div>
     </div>
 
-    ${results.length > 1 ? `
-    <div class="top-predictions">
-      <div class="tp-label">Top Predictions</div>
-      ${results.map((r, i) => `
-        <div class="tp-item">
-          <div class="tp-rank">${i + 1}</div>
+    ${preds.length > 1 ? `
+    <div class="top-preds">
+      <div class="tp-head">Top matches</div>
+      ${preds.map((r, i) => `
+        <div class="tp-row">
+          <div class="tp-n">${i + 1}</div>
           <div class="tp-name">${r.label}</div>
           <div class="tp-pct">${(r.score * 100).toFixed(1)}%</div>
         </div>
       `).join('')}
-    </div>
-    ` : ''}
+    </div>` : ''}
 
-    <div class="fun-fact-card">
-      <div class="ff-header">
-        <span class="ff-icon">✨</span>
-        <span class="ff-title">Butterfly Fact</span>
-      </div>
-      <p class="ff-text">${fact}</p>
+    <div class="fact-box">
+      <div class="fact-label"><i class="ti ti-sparkles" aria-hidden="true"></i> Did you know</div>
+      <p class="fact-text">${fact}</p>
     </div>
 
-    <button class="save-btn" id="${saveId}" onclick="saveToHistory('${saveId}', \`${encodeURIComponent(imageURL)}\`, \`${encodeURIComponent(top.label)}\`, '${pct}')">
-      🌸 Save to My Garden
+    <button class="save-btn" id="${saveId}"
+      onclick="saveToHistory('${saveId}',\`${encodeURIComponent(imageURL)}\`,\`${encodeURIComponent(top.label)}\`,'${pct}')">
+      Save to My Garden
     </button>
   `;
 
-  // Animate progress bar
   requestAnimationFrame(() => {
     setTimeout(() => {
-      const bar = document.getElementById(`pb_${saveId}`);
+      const bar = document.getElementById(`cb_${saveId}`);
       if (bar) bar.style.width = `${pct}%`;
-    }, 100);
+    }, 80);
   });
 
   container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-/* ════════════════════════════════════════════════════════
-   HISTORY
-════════════════════════════════════════════════════════ */
+/* ── HISTORY ── */
 function saveToHistory(btnId, encodedURL, encodedSpecies, pct) {
   const btn     = document.getElementById(btnId);
   const imageURL = decodeURIComponent(encodedURL);
   const species  = decodeURIComponent(encodedSpecies);
 
-  // Save as small thumbnail
   const canvas = document.createElement('canvas');
-  canvas.width = 100; canvas.height = 100;
+  canvas.width = 120; canvas.height = 120;
   const ctx = canvas.getContext('2d');
   const img = new Image();
   img.crossOrigin = 'anonymous';
   img.src = imageURL;
-  img.onload = () => {
-    ctx.drawImage(img, 0, 0, 100, 100);
-    const thumb = canvas.toDataURL('image/jpeg', 0.6);
-    const entry = {
-      id:      Date.now(),
-      thumb,
-      species,
-      pct,
-      date:    new Date().toLocaleString(),
-    };
+
+  const save = (thumb) => {
+    const entry = { id: Date.now(), thumb, species, pct, date: new Date().toLocaleString() };
     State.history.unshift(entry);
     if (State.history.length > 50) State.history.pop();
     localStorage.setItem('bf_history', JSON.stringify(State.history));
-    showToast('🌸 Saved to your garden!');
-    if (btn) { btn.textContent = '✅ Saved!'; btn.disabled = true; }
+    showToast('Saved to your garden');
+    if (btn) { btn.textContent = 'Saved!'; btn.disabled = true; }
     renderHistoryPage();
     renderHomeHistory();
   };
-  img.onerror = () => {
-    // No canvas thumb available, save without
-    const entry = { id: Date.now(), thumb: null, species, pct, date: new Date().toLocaleString() };
-    State.history.unshift(entry);
-    localStorage.setItem('bf_history', JSON.stringify(State.history));
-    showToast('🌸 Saved to your garden!');
-    if (btn) { btn.textContent = '✅ Saved!'; btn.disabled = true; }
-    renderHistoryPage();
-    renderHomeHistory();
+
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0, 120, 120);
+    save(canvas.toDataURL('image/jpeg', 0.7));
   };
+  img.onerror = () => save(null);
 }
 
 function renderHistoryPage() {
   const list = document.getElementById('history-list');
-  if (State.history.length === 0) {
+  if (!State.history.length) {
     list.innerHTML = `
       <div class="empty-state">
-        <div class="empty-emoji">🌿</div>
+        <div class="empty-icon-wrap"><i class="ti ti-plant-2" aria-hidden="true"></i></div>
         <h3>Your garden is empty</h3>
         <p>Identified butterflies will appear here</p>
-        <button class="cta-btn" onclick="navigateTo('camera')">Start Scanning</button>
+        <button class="cta-btn" onclick="navigateTo('camera')">Start scanning</button>
       </div>`;
     return;
   }
-
   list.innerHTML = State.history.map(item => `
-    <div class="history-item" id="hi_${item.id}">
+    <div class="hist-item" id="hi_${item.id}">
       ${item.thumb
-        ? `<img class="hi-thumb" src="${item.thumb}" alt="${item.species}" />`
-        : `<div class="hi-thumb" style="background:linear-gradient(135deg,#e9d5ff,#fce7f3);display:flex;align-items:center;justify-content:center;font-size:24px;">🦋</div>`
-      }
+        ? `<img class="hi-thumb" src="${item.thumb}" alt="${item.species}"/>`
+        : `<div class="hi-thumb-ph"><i class="ti ti-butterfly" aria-hidden="true"></i></div>`}
       <div class="hi-info">
         <div class="hi-species">${item.species}</div>
-        <div class="hi-confidence">${item.pct}% confident</div>
-        <div class="hi-date">📅 ${item.date}</div>
+        <div class="hi-pct">${item.pct}% confident</div>
+        <div class="hi-date">${item.date}</div>
       </div>
-      <button class="hi-delete" onclick="deleteHistoryItem(${item.id})">🗑️</button>
-    </div>
-  `).join('');
+      <button class="del-btn" onclick="deleteHistoryItem(${item.id})" aria-label="Delete">
+        <i class="ti ti-trash" aria-hidden="true"></i>
+      </button>
+    </div>`).join('');
 }
 
 function deleteHistoryItem(id) {
   State.history = State.history.filter(h => h.id !== id);
   localStorage.setItem('bf_history', JSON.stringify(State.history));
   const el = document.getElementById(`hi_${id}`);
-  if (el) { el.style.opacity = '0'; el.style.transform = 'scale(0.9)'; el.style.transition = '0.25s'; setTimeout(() => renderHistoryPage(), 250); }
+  if (el) {
+    el.style.cssText = 'opacity:0;transform:scale(0.95);transition:0.22s';
+    setTimeout(() => renderHistoryPage(), 230);
+  }
   renderHomeHistory();
 }
 
 document.getElementById('clear-all-btn').addEventListener('click', () => {
-  if (State.history.length === 0) return;
+  if (!State.history.length) return;
   if (!confirm('Clear all scans from your garden?')) return;
   State.history = [];
   localStorage.removeItem('bf_history');
   renderHistoryPage();
   renderHomeHistory();
-  showToast('🌿 Garden cleared');
+  showToast('Garden cleared');
 });
 
 function renderHomeHistory() {
   const wrap = document.getElementById('home-history-preview');
-  if (State.history.length === 0) {
+  if (!State.history.length) {
     wrap.innerHTML = `
-      <div class="empty-state-sm">
-        <span>🌿</span><p>No scans yet — go explore!</p>
+      <div class="empty-sm">
+        <i class="ti ti-plant-2" aria-hidden="true"></i>
+        <span>No scans yet — go explore!</span>
       </div>`;
     return;
   }
   wrap.innerHTML = State.history.slice(0, 3).map(item => `
-    <div class="home-hi-card">
+    <div class="mini-card">
       ${item.thumb
-        ? `<img class="home-hi-thumb" src="${item.thumb}" alt="${item.species}" />`
-        : `<div class="home-hi-thumb" style="background:linear-gradient(135deg,#e9d5ff,#fce7f3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;width:48px;height:48px;">🦋</div>`
-      }
+        ? `<img class="mini-thumb" src="${item.thumb}" alt="${item.species}"/>`
+        : `<div class="mini-thumb-ph"><i class="ti ti-butterfly" aria-hidden="true"></i></div>`}
       <div>
-        <div class="home-hi-name">${item.species}</div>
-        <div class="home-hi-pct">${item.pct}% · ${item.date}</div>
+        <div class="mini-name">${item.species}</div>
+        <div class="mini-meta">${item.pct}% · ${item.date}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-/* ════════════════════════════════════════════════════════
-   NAVIGATION
-════════════════════════════════════════════════════════ */
+/* ── NAVIGATION ── */
 function navigateTo(page) {
   if (page === State.currentPage) return;
-
-  // Stop camera when leaving camera page
   if (State.currentPage === 'camera') stopCamera();
-
-  // Deactivate current page
   document.getElementById(`page-${State.currentPage}`).classList.remove('active');
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-
   State.currentPage = page;
-
-  // Activate new page
   document.getElementById(`page-${page}`).classList.add('active');
   const navBtn = document.querySelector(`.nav-item[data-page="${page}"]`);
   if (navBtn) navBtn.classList.add('active');
-
-  // Page-specific init
   if (page === 'camera') startCamera();
   if (page === 'history') renderHistoryPage();
 }
 
-// Nav dock buttons
 document.querySelectorAll('.nav-item').forEach(btn => {
   btn.addEventListener('click', () => navigateTo(btn.dataset.page));
 });
 
-/* ════════════════════════════════════════════════════════
-   HELPERS
-════════════════════════════════════════════════════════ */
-function setModelStatus(status) {
-  const dot = document.getElementById('model-dot');
-  dot.className = `status-dot ${status}`;
+/* ── HELPERS ── */
+function setModelStatus(s) {
+  document.getElementById('model-dot').className = `status-dot ${s}`;
 }
 
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.classList.remove('hidden');
-  requestAnimationFrame(() => t.classList.add('show'));
+  t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    t.classList.remove('show');
-    setTimeout(() => t.classList.add('hidden'), 300);
-  }, 2500);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
 function showAnalyzingOverlay(parent) {
-  const overlay = document.createElement('div');
-  overlay.className = 'analyzing-overlay';
-  overlay.innerHTML = `
-    <div class="analyzing-spinner">🦋</div>
-    <div class="analyzing-text">Identifying species…</div>
-  `;
-  parent.style.position = 'relative';
-  parent.appendChild(overlay);
-  return overlay;
+  const o = document.createElement('div');
+  o.className = 'analyzing-overlay';
+  o.innerHTML = `<div class="analyzing-spinner"><i class="ti ti-butterfly"></i></div>
+    <div class="analyzing-text">Identifying species…</div>`;
+  if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+  parent.appendChild(o);
+  return o;
 }
 
-function removeAnalyzingOverlay(overlay) {
-  if (overlay && overlay.parentNode) {
-    overlay.style.opacity = '0';
-    overlay.style.transition = 'opacity 0.2s';
-    setTimeout(() => overlay.remove(), 200);
+function removeAnalyzingOverlay(o) {
+  if (o && o.parentNode) {
+    o.style.cssText = 'opacity:0;transition:opacity 0.2s';
+    setTimeout(() => o.remove(), 220);
   }
 }
 
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-/* ════════════════════════════════════════════════════════
-   INIT
-════════════════════════════════════════════════════════ */
 boot();
-
-/* ─── Service Worker registration ─── */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(reg => console.log('SW registered:', reg.scope))
-      .catch(err => console.warn('SW not found:', err));
-  });
-}
 </script>
 </body>
 </html>
